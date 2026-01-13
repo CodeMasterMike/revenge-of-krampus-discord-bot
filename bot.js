@@ -65,15 +65,20 @@ client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
   const content = message.content;
+  console.log(`[DEBUG] Message from ${message.author.tag} in #${message.channel.name}: "${content}"`);
 
   for (const patternConfig of patternsConfig.patterns) {
     const regex = patternToRegex(patternConfig.pattern);
+    const matched = regex.test(content);
+    console.log(`[DEBUG]   Pattern "${patternConfig.pattern}" (${regex}) → ${matched ? 'MATCH' : 'no match'}`);
 
-    if (regex.test(content)) {
+    if (matched) {
       try {
         if (patternConfig.type === 'react') {
+          console.log(`[DEBUG]   → Reacting with: ${patternConfig.emoji}`);
           await message.react(patternConfig.emoji);
         } else if (patternConfig.type === 'reply') {
+          console.log(`[DEBUG]   → Replying with: ${patternConfig.message}`);
           await message.reply(patternConfig.message);
         }
       } catch (error) {
