@@ -6,7 +6,7 @@
       "emoji": "\ud83c\uddff"
     },
     {
-      "pattern": "somebody*help",
+      "pattern": "some*help",
       "type": "reply",
       "message": "I'm here to help!"
     },

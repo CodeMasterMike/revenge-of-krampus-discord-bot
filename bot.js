@@ -52,15 +52,20 @@ client.once(Events.ClientReady, (c) => {
 
 // Handle slash commands
 client.on(Events.InteractionCreate, async (interaction) => {
+  console.log(`[DEBUG] Slash command received: /${interaction.commandName} by ${interaction.user.tag}`);
   if (!interaction.isChatInputCommand()) return;
 
-  if (interaction.commandName === 'test') {
-    await interaction.reply('Hello! Bot is working.');
+  try {
+    if (interaction.commandName === 'test') {
+      await interaction.reply('Hello! Bot is working.');
+    }
+  } catch (error) {
+    console.error(`Error handling /${interaction.commandName}:`, error.message);
   }
 });
 
 // Handle message monitoring
-client.on(Events.MessageCreate, async (message) => {
+client.on(Events.MessageCreate, async (message) => {  
   // Ignore bot messages to prevent loops
   if (message.author.bot) return;
 

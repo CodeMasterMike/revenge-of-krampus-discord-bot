@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A Discord bot that monitors messages and reacts/replies based on configurable patterns. Uses Discord Gateway (WebSocket) via discord.js.
+A Discord bot that monitors messages and reacts/replies based on configurable patterns. Uses Discord Gateway (WebSocket) via discord.js v14. ES module project (`"type": "module"` in package.json).
 
 ## Commands
 
@@ -13,6 +13,8 @@ npm install          # Install dependencies
 npm start            # Run the bot (node bot.js)
 npm run dev          # Run with nodemon for auto-reload
 ```
+
+No test or lint tooling is configured.
 
 ## Environment Setup
 
@@ -24,20 +26,23 @@ Requires a `.env` file with:
 
 ## Architecture
 
-**Key Files:**
-- `bot.js` - Main bot file with Gateway client, message handler, and slash command handler
-- `patterns.json` - Pattern configuration for reactions and replies
+Single-file bot (`bot.js`) with JSON-based pattern config (`patterns.json`).
 
-**Pattern Matching:** Patterns support `*` wildcard (matches any characters) and are case-insensitive. First matching pattern wins.
+**bot.js structure:**
+- **Client setup** — Creates discord.js Client with Guilds, GuildMessages, and MessageContent intents
+- **`patternToRegex()`** — Converts pattern strings to RegExp: escapes special chars, replaces `*` with `.*`, case-insensitive
+- **Slash command registration** — On `ClientReady`, registers commands globally via Discord REST API PUT to `/applications/{APP_ID}/commands`
+- **`MessageCreate` handler** — Ignores bot authors, iterates patterns in order, first match wins. Type `"react"` adds emoji reaction; type `"reply"` sends a reply message. Includes `[DEBUG]` console logs for each pattern test and action taken.
+- **`InteractionCreate` handler** — Routes slash commands (currently only `/test`)
 
-**Pattern Config Format:**
+**Pattern Config Format (`patterns.json`):**
 ```json
 {
   "patterns": [
-    { "pattern": "hello", "type": "react", "emoji": "Z" },
+    { "pattern": "hello", "type": "react", "emoji": "🇿" },
     { "pattern": "somebody*help", "type": "reply", "message": "I'm here to help!" }
   ]
 }
 ```
 
-**Slash Commands:** Registered automatically on bot startup via Discord REST API.
+Patterns are loaded once at startup — changes to `patterns.json` require a bot restart (or use `npm run dev` for auto-reload).
