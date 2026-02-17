@@ -25,7 +25,7 @@ ssh <your-user>@<vm-public-ip>
 ## 3. Install Node.js
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs git
 ```
 
@@ -46,47 +46,39 @@ nano ~/revenge-of-krampus/.env
 ```
 APP_ID=your_app_id
 DISCORD_TOKEN=your_bot_token
+PUBLIC_KEY=your_public_key
 ```
 
-## 6. Set up systemd service
+## 6. Set up pm2
 
-Create the service file:
+Install pm2 globally:
 
 ```bash
-sudo nano /etc/systemd/system/krampus-bot.service
+sudo npm install -g pm2
 ```
 
-```ini
-[Unit]
-Description=Revenge of Krampus Discord Bot
-After=network.target
-
-[Service]
-Type=simple
-User=<your-user>
-WorkingDirectory=/home/<your-user>/revenge-of-krampus
-ExecStart=/usr/bin/node bot.js
-Restart=on-failure
-RestartSec=5
-EnvironmentFile=/home/<your-user>/revenge-of-krampus/.env
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Enable and start:
+Start the bot:
 
 ```bash
-sudo systemctl enable krampus-bot
-sudo systemctl start krampus-bot
+cd ~/revenge-of-krampus
+pm2 start bot.js --name krampus-bot
+```
+
+Set up pm2 to start on boot:
+
+```bash
+pm2 startup
+pm2 save
 ```
 
 ## 7. Useful commands
 
 ```bash
-sudo systemctl status krampus-bot     # Check status
-sudo journalctl -u krampus-bot -f     # Tail logs
-sudo systemctl restart krampus-bot    # Restart after changes
+pm2 status                  # Check status
+pm2 logs krampus-bot        # Tail logs
+pm2 restart krampus-bot     # Restart after changes
+pm2 stop krampus-bot        # Stop the bot
+pm2 delete krampus-bot      # Remove from pm2
 ```
 
 ## 8. Deploying updates
@@ -95,5 +87,5 @@ sudo systemctl restart krampus-bot    # Restart after changes
 cd ~/revenge-of-krampus
 git pull
 npm install
-sudo systemctl restart krampus-bot
+pm2 restart krampus-bot
 ```

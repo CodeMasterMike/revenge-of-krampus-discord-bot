@@ -9,11 +9,6 @@
       "pattern": "some*help",
       "type": "reply",
       "message": "I'm here to help!"
-    },
-    {
-      "pattern": "someone*help",
-      "type": "reply",
-      "message": "I'm here to help!"
     }
   ]
 }
