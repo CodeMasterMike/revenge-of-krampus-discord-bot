@@ -21,19 +21,36 @@ No test or lint tooling is configured.
 Requires a `.env` file with:
 - `APP_ID` - Discord application ID
 - `DISCORD_TOKEN` - Bot token
+- `PUBLIC_KEY` - Discord application public key
 
 **Important:** Enable MESSAGE_CONTENT privileged intent in Discord Developer Portal (Bot > Privileged Gateway Intents).
 
 ## Architecture
 
-Single-file bot (`bot.js`) with JSON-based pattern config (`patterns.json`).
+Modular discord.js project with JSON-based pattern config (`patterns.json`).
 
-**bot.js structure:**
-- **Client setup** — Creates discord.js Client with Guilds, GuildMessages, and MessageContent intents
-- **`patternToRegex()`** — Converts pattern strings to RegExp: escapes special chars, replaces `*` with `.*`, case-insensitive
-- **Slash command registration** — On `ClientReady`, registers commands globally via Discord REST API PUT to `/applications/{APP_ID}/commands`
-- **`MessageCreate` handler** — Ignores bot authors, iterates patterns in order, first match wins. Type `"react"` adds emoji reaction; type `"reply"` sends a reply message. Includes `[DEBUG]` console logs for each pattern test and action taken.
-- **`InteractionCreate` handler** — Routes slash commands (currently only `/test`)
+**Project structure:**
+```
+bot.js                     # Entry point: client setup, event registration, login
+src/
+  events/
+    ready.js               # ClientReady handler + slash command registration via REST API
+    messageCreate.js        # Message pattern matching handler
+    interactionCreate.js    # Slash command router (Collection-based lookup)
+  commands/
+    test.js                 # /test command: definition (SlashCommandBuilder) + execute()
+  utils/
+    patterns.js             # patternToRegex() + loadPatterns() from patterns.json
+```
+
+**Event handler convention:** Each event file exports `name` (Discord event), `once` (boolean), and `execute()`. `bot.js` registers them dynamically.
+
+**Adding a new slash command:** Create a file in `src/commands/` exporting `data` (SlashCommandBuilder) and `execute(interaction)`. Then import it in both `src/events/ready.js` (for registration) and `src/events/interactionCreate.js` (for routing).
+
+**Key behaviors:**
+- **Pattern matching** (`messageCreate.js`) — Ignores bot authors, iterates patterns in order, first match wins. Type `"react"` adds emoji reaction; type `"reply"` sends a reply message. Includes `[DEBUG]` console logs.
+- **`patternToRegex()`** — Converts pattern strings to RegExp: escapes special chars, replaces `*` with `.*`, case-insensitive.
+- **Slash command registration** (`ready.js`) — On `ClientReady`, registers commands globally via Discord REST API PUT to `/applications/{APP_ID}/commands`.
 
 **Pattern Config Format (`patterns.json`):**
 ```json

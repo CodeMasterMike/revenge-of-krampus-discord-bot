@@ -1,112 +1,95 @@
-# Getting Started app for Discord
+# Revenge of Krampus Bot
 
-This project contains a basic rock-paper-scissors-style Discord app written in JavaScript, built for the [getting started guide](https://discord.com/developers/docs/getting-started).
+A Discord bot that monitors messages and reacts or replies based on configurable patterns. Built with discord.js v14 using the Gateway WebSocket API.
 
-![Demo of app](https://github.com/discord/discord-example-app/raw/main/assets/getting-started-demo.gif?raw=true)
-
-## Project structure
-Below is a basic overview of the project structure:
+## Project Structure
 
 ```
-├── examples    -> short, feature-specific sample apps
-│   ├── app.js  -> finished app.js code
-│   ├── button.js
-│   ├── command.js
-│   ├── modal.js
-│   ├── selectMenu.js
-├── .env.sample -> sample .env file
-├── app.js      -> main entrypoint for app
-├── commands.js -> slash command payloads + helpers
-├── game.js     -> logic specific to RPS
-├── utils.js    -> utility functions and enums
-├── package.json
-├── README.md
-└── .gitignore
+bot.js                     # Entry point: client setup, event registration, login
+src/
+  events/
+    ready.js               # ClientReady handler + slash command registration
+    messageCreate.js        # Message pattern matching handler
+    interactionCreate.js    # Slash command router
+  commands/
+    test.js                 # /test command definition + handler
+  utils/
+    patterns.js             # patternToRegex() + pattern config loading
+patterns.json              # Pattern matching configuration
 ```
 
-## Running app locally
+## Setup
 
-Before you start, you'll need to install [NodeJS](https://nodejs.org/en/download/) and [create a Discord app](https://discord.com/developers/applications) with the proper permissions:
-- `applications.commands`
-- `bot` (with Send Messages enabled)
+### Prerequisites
 
+- [Node.js](https://nodejs.org/) >= 18
+- A [Discord application](https://discord.com/developers/applications) with a bot
 
-Configuring the app is covered in detail in the [getting started guide](https://discord.com/developers/docs/getting-started).
+### Discord Developer Portal
 
-### Setup project
+1. Go to your app's settings in the [Discord Developer Portal](https://discord.com/developers/applications)
+2. Under **Bot > Privileged Gateway Intents**, enable **Message Content Intent**
+3. Copy your **App ID**, **Bot Token**, and **Public Key**
 
-First clone the project:
-```
-git clone https://github.com/discord/discord-example-app.git
-```
+### Install and Configure
 
-Then navigate to its directory and install dependencies:
-```
-cd discord-example-app
+```bash
 npm install
 ```
-### Get app credentials
 
-Fetch the credentials from your app's settings and add them to a `.env` file (see `.env.sample` for an example). You'll need your app ID (`APP_ID`), bot token (`DISCORD_TOKEN`), and public key (`PUBLIC_KEY`).
-
-Fetching credentials is covered in detail in the [getting started guide](https://discord.com/developers/docs/getting-started).
-
-> 🔑 Environment variables can be added to the `.env` file in Glitch or when developing locally, and in the Secrets tab in Replit (the lock icon on the left).
-
-### Install slash commands
-
-The commands for the example app are set up in `commands.js`. All of the commands in the `ALL_COMMANDS` array at the bottom of `commands.js` will be installed when you run the `register` command configured in `package.json`:
+Create a `.env` file in the project root:
 
 ```
-npm run register
+APP_ID=your_app_id
+DISCORD_TOKEN=your_bot_token
+PUBLIC_KEY=your_public_key
 ```
 
-### Run the app
+### Run the Bot
 
-After your credentials are added, go ahead and run the app:
-
-```
-node app.js
-```
-
-> ⚙️ A package [like `nodemon`](https://github.com/remy/nodemon), which watches for local changes and restarts your app, may be helpful while locally developing.
-
-If you aren't following the [getting started guide](https://discord.com/developers/docs/getting-started), you can move the contents of `examples/app.js` (the finished `app.js` file) to the top-level `app.js`.
-
-### Set up interactivity
-
-The project needs a public endpoint where Discord can send requests. To develop and test locally, you can use something like [`ngrok`](https://ngrok.com/) to tunnel HTTP traffic.
-
-Install ngrok if you haven't already, then start listening on port `3000`:
-
-```
-ngrok http 3000
+```bash
+npm start            # Run the bot
+npm run dev          # Run with auto-reload (nodemon)
 ```
 
-You should see your connection open:
+Slash commands are registered automatically on startup.
 
-```
-Tunnel Status                 online
-Version                       2.0/2.0
-Web Interface                 http://127.0.0.1:4040
-Forwarding                    https://1234-someurl.ngrok.io -> localhost:3000
-
-Connections                  ttl     opn     rt1     rt5     p50     p90
-                              0       0       0.00    0.00    0.00    0.00
-```
-
-Copy the forwarding address that starts with `https`, in this case `https://1234-someurl.ngrok.io`, then go to your [app's settings](https://discord.com/developers/applications).
-
-On the **General Information** tab, there will be an **Interactions Endpoint URL**. Paste your ngrok address there, and append `/interactions` to it (`https://1234-someurl.ngrok.io/interactions` in the example).
-
-Click **Save Changes**, and your app should be ready to run 🚀
-
-## Add bot to your server
+## Add Bot to Your Server
 
 [Click here to invite the bot to your Discord server](https://discord.com/oauth2/authorize?client_id=1457497048331845657&permissions=274877974592&integration_type=0&scope=bot)
 
-## Other resources
-- Read **[the documentation](https://discord.com/developers/docs/intro)** for in-depth information about API features.
-- Browse the `examples/` folder in this project for smaller, feature-specific code examples
-- Join the **[Discord Developers server](https://discord.gg/discord-developers)** to ask questions about the API, attend events hosted by the Discord API team, and interact with other devs.
-- Check out **[community resources](https://discord.com/developers/docs/topics/community-resources#community-resources)** for language-specific tools maintained by community members.
+## Pattern Configuration
+
+Patterns are defined in `patterns.json`. The bot checks each incoming message against patterns in order and stops at the first match.
+
+```json
+{
+  "patterns": [
+    { "pattern": "hello", "type": "react", "emoji": "🇿" },
+    { "pattern": "somebody*help", "type": "reply", "message": "I'm here to help!" }
+  ]
+}
+```
+
+- **`pattern`** — Text to match. Use `*` as a wildcard (matches any characters). Case-insensitive.
+- **`type: "react"`** — Reacts to the message with the specified `emoji`.
+- **`type: "reply"`** — Replies to the message with the specified `message`.
+
+Changes to `patterns.json` require a bot restart (or use `npm run dev` for auto-reload).
+
+## Adding a New Slash Command
+
+1. Create a file in `src/commands/` (e.g. `ping.js`):
+   ```js
+   import { SlashCommandBuilder } from 'discord.js';
+
+   export const data = new SlashCommandBuilder()
+     .setName('ping')
+     .setDescription('Replies with pong');
+
+   export async function execute(interaction) {
+     await interaction.reply('Pong!');
+   }
+   ```
+2. Import it in `src/events/ready.js` and add it to the `commands` array
+3. Import it in `src/events/interactionCreate.js` and add it to the `commands` Collection

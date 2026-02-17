@@ -1,3 +1,5 @@
 node_modules
 .env
 krampus-bot-vm_key.pem
+tmpclaude*
+.claude/settings.local.json
