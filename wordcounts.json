@@ -23,7 +23,7 @@
     "rudolph",
     "grinch"
   ],
-  "milestones": [10, 25, 50, 100, 250, 500, 1000],
+  "milestones": [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000],
   "milestoneMessages": [
     "Krampus has noticed that {user} has said **{word}** {count} times... The chains rattle closer.",
     "Ho ho ho... {user} cannot stop saying **{word}**! {count} times now. Krampus is watching.",
