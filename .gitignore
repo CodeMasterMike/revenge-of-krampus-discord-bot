@@ -3,3 +3,4 @@ node_modules
 krampus-bot-vm_key.pem
 tmpclaude*
 .claude/settings.local.json
+data/

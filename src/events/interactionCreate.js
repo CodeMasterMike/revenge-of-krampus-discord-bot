@@ -1,8 +1,10 @@
 import { Collection, Events } from 'discord.js';
 import * as testCommand from '../commands/test.js';
+import * as wordcountCommand from '../commands/wordcount.js';
 
 const commands = new Collection();
 commands.set(testCommand.data.name, testCommand);
+commands.set(wordcountCommand.data.name, wordcountCommand);
 
 export const name = Events.InteractionCreate;
 export const once = false;
