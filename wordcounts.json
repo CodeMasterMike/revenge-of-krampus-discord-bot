@@ -1,0 +1,34 @@
+{
+  "trackedWords": [
+    "hello",
+    "help",
+    "nut",
+    "suck",
+    "meat",
+    "stand",
+    "league",
+    "tft",
+    "no",
+    "hop",
+    "morn",
+    "kramp",
+    "christmas",
+    "santa",
+    "naughty",
+    "nice",
+    "presents",
+    "reindeer",
+    "sleigh",
+    "elves",
+    "rudolph",
+    "grinch"
+  ],
+  "milestones": [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000],
+  "milestoneMessages": [
+    "Krampus has noticed that {user} has said **{word}** {count} times... The chains rattle closer.",
+    "Ho ho ho... {user} cannot stop saying **{word}**! {count} times now. Krampus is watching.",
+    "{user} has uttered **{word}** {count} times! Krampus sharpens his birch switches...",
+    "FOOLISH MORTAL! {user} has said **{word}** {count} times! Krampus adds another name to his list!",
+    "The darkness grows... {user} has spoken **{word}** {count} times. Krampus stirs from his slumber!"
+  ]
+}

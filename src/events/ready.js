@@ -1,7 +1,8 @@
 import { Events, REST, Routes } from 'discord.js';
 import * as testCommand from '../commands/test.js';
+import * as wordcountCommand from '../commands/wordcount.js';
 
-const commands = [testCommand];
+const commands = [testCommand, wordcountCommand];
 
 export const name = Events.ClientReady;
 export const once = true;

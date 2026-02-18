@@ -83,9 +83,29 @@ pm2 delete krampus-bot      # Remove from pm2
 
 ## 8. Deploying updates
 
+### Manual
+
 ```bash
 cd ~/revenge-of-krampus
 git pull
 npm install
 pm2 restart krampus-bot
+```
+
+### Automatic (GitHub Actions)
+
+A GitHub Actions workflow (`.github/workflows/deploy.yml`) automatically deploys on every push to `main`. It SSHs into the VM and runs the deploy commands above.
+
+**Setup — add these secrets in your GitHub repo (Settings > Secrets and variables > Actions):**
+
+- `VM_HOST` — the VM's public IP address
+- `VM_USER` — your SSH username (e.g. `mmcalpin`)
+- `VM_SSH_KEY` — a private SSH key authorized on the VM
+
+**To generate a deploy key on the VM:**
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/github_deploy -N ""
+cat ~/.ssh/github_deploy.pub >> ~/.ssh/authorized_keys
+cat ~/.ssh/github_deploy   # copy this as the VM_SSH_KEY secret value
 ```

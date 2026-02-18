@@ -9,6 +9,11 @@
       "pattern": "some*help",
       "type": "reply",
       "message": "I'm here to help!"
+    },
+    {
+      "pattern": "*meat*",
+      "type": "react",
+      "emoji": "🧆"
     }
   ]
 }
