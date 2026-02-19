@@ -1,0 +1,16 @@
+{
+  "chance": 0.01,
+  "messages": [
+    "Did you hear that? The chains... they're getting closer.",
+    "Krampus sees you, {user}. He always sees you.",
+    "A shadow moves in the corner of your eye... Krampus was here.",
+    "The birch switches rustle. Krampus knows what you've done, {user}.",
+    "Somewhere in the darkness, Krampus smiles.",
+    "You feel a chill down your spine. Krampus is near.",
+    "Krampus whispers: *\"I know if you've been bad or good...\"*",
+    "The temperature drops. A cloven hoofprint appears. Krampus was here.",
+    "Krampus has added {user} to his watchlist.",
+    "A distant bell tolls... Krampusnacht approaches."
+  ],
+  "emojis": ["👹", "⛓️", "🐐", "👀", "🔔", "❄️", "🌑", "💀"]
+}

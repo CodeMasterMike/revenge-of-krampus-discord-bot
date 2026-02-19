@@ -41,6 +41,13 @@ export interface UpdateResult {
 
 export type WordOccurrences = Record<string, number>;
 
+// Encounters config types
+export interface EncountersConfig {
+  chance: number;
+  messages: string[];
+  emojis: string[];
+}
+
 // Bot event/command types
 export interface BotEvent {
   name: string;

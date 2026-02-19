@@ -7,9 +7,11 @@ import {
   checkMilestone,
   formatMilestoneMessage
 } from '../utils/wordcounter.js';
+import { loadEncountersConfig, rollEncounter, formatEncounterMessage } from '../utils/encounters.js';
 
 const patternsConfig = loadPatterns();
 const wordCountConfig = loadWordCountConfig();
+const encountersConfig = loadEncountersConfig();
 
 export const name = Events.MessageCreate;
 export const once = false;
@@ -79,6 +81,25 @@ export async function execute(message: Message): Promise<void> {
       } catch (error) {
         console.error('Error sending milestone callout:', error);
       }
+    }
+  }
+
+  // Random Krampus encounters
+  const encounter = rollEncounter(encountersConfig);
+  if (encounter) {
+    try {
+      if (encounter.type === 'react') {
+        console.log(`[DEBUG] Krampus encounter! Reacting with: ${encounter.value}`);
+        await message.react(encounter.value);
+      } else {
+        const formatted = formatEncounterMessage(encounter.value, message.author.id);
+        console.log(`[DEBUG] Krampus encounter! Sending: ${formatted}`);
+        if ('send' in message.channel) {
+          await message.channel.send(formatted);
+        }
+      }
+    } catch (error) {
+      console.error('Error processing Krampus encounter:', error);
     }
   }
 }
