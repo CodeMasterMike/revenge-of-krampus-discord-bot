@@ -1,10 +1,10 @@
 import { ActivityType, Client, Events, REST, Routes } from 'discord.js';
 import * as testCommand from '../commands/test.js';
-import * as wordcountCommand from '../commands/wordcount.js';
+// import * as wordcountCommand from '../commands/wordcount.js';
 import * as krampusCommand from '../commands/krampus.js';
 import type { BotCommand } from '../types/index.js';
 
-const commands: BotCommand[] = [testCommand, wordcountCommand, krampusCommand];
+const commands: BotCommand[] = [testCommand, /* wordcountCommand, */ krampusCommand];
 
 const krampusStatuses = [
   'Watching the naughty list...',
