@@ -3,14 +3,16 @@
   "private": true,
   "version": "1.0.0",
   "description": "Discord example app",
-  "main": "bot.js",
+  "main": "dist/bot.js",
   "type": "module",
   "engines": {
     "node": ">=18.x"
   },
   "scripts": {
-    "start": "node bot.js",
-    "dev": "nodemon bot.js"
+    "build": "tsc",
+    "start": "node dist/bot.js",
+    "dev": "nodemon --exec tsx src/bot.ts --ext ts,json",
+    "typecheck": "tsc --noEmit"
   },
   "author": "Shay DeWael",
   "license": "MIT",
@@ -19,6 +21,9 @@
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.0"
+    "@types/node": "^25.2.3",
+    "nodemon": "^3.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }

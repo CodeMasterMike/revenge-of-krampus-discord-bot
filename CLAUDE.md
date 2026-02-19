@@ -4,14 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A Discord bot that monitors messages and reacts/replies based on configurable patterns. Uses Discord Gateway (WebSocket) via discord.js v14. ES module project (`"type": "module"` in package.json).
+A Discord bot that monitors messages and reacts/replies based on configurable patterns. Uses Discord Gateway (WebSocket) via discord.js v14. TypeScript project compiled to `dist/` (`"type": "module"` in package.json).
 
 ## Commands
 
 ```bash
 npm install          # Install dependencies
-npm start            # Run the bot (node bot.js)
-npm run dev          # Run with nodemon for auto-reload
+npm run build        # Compile TypeScript to dist/
+npm start            # Run the bot (node dist/bot.js)
+npm run dev          # Run with tsx + nodemon for auto-reload
+npm run typecheck    # Type-check without emitting
 ```
 
 No test or lint tooling is configured.
@@ -27,30 +29,37 @@ Requires a `.env` file with:
 
 ## Architecture
 
-Modular discord.js project with JSON-based pattern config (`patterns.json`).
+Modular discord.js TypeScript project with JSON-based pattern config (`patterns.json`). Source in `src/`, compiles to `dist/`.
 
 **Project structure:**
 ```
-bot.js                     # Entry point: client setup, event registration, login
 src/
+  bot.ts                     # Entry point: client setup, event registration, login
+  types/
+    index.ts                 # Shared type definitions (PatternConfig, BotEvent, BotCommand, etc.)
   events/
-    ready.js               # ClientReady handler + slash command registration via REST API
-    messageCreate.js        # Message pattern matching handler
-    interactionCreate.js    # Slash command router (Collection-based lookup)
+    ready.ts                 # ClientReady handler + slash command registration via REST API
+    messageCreate.ts         # Message pattern matching handler
+    interactionCreate.ts     # Slash command router (Collection-based lookup)
   commands/
-    test.js                 # /test command: definition (SlashCommandBuilder) + execute()
+    test.ts                  # /test command: definition (SlashCommandBuilder) + execute()
+    wordcount.ts             # /wordcount command: user word count stats
   utils/
-    patterns.js             # patternToRegex() + loadPatterns() from patterns.json
+    patterns.ts              # patternToRegex() + loadPatterns() from patterns.json
+    wordcounter.ts           # Word tracking, milestone checking, persistence
 ```
 
-**Event handler convention:** Each event file exports `name` (Discord event), `once` (boolean), and `execute()`. `bot.js` registers them dynamically.
+**Import convention:** All `.ts` imports use `.js` extensions (e.g., `import { foo } from './bar.js'`). Required by `module: "Node16"` — TypeScript resolves `.js` to `.ts` at compile time.
 
-**Adding a new slash command:** Create a file in `src/commands/` exporting `data` (SlashCommandBuilder) and `execute(interaction)`. Then import it in both `src/events/ready.js` (for registration) and `src/events/interactionCreate.js` (for routing).
+**Event handler convention:** Each event file exports `name` (Discord event), `once` (boolean), and `execute()`. `bot.ts` registers them dynamically using the `BotEvent` interface.
+
+**Adding a new slash command:** Create a file in `src/commands/` exporting `data` (SlashCommandBuilder) and `execute(interaction: ChatInputCommandInteraction)`. Then import it in both `src/events/ready.ts` (for registration) and `src/events/interactionCreate.ts` (for routing).
 
 **Key behaviors:**
-- **Pattern matching** (`messageCreate.js`) — Ignores bot authors, iterates patterns in order, first match wins. Type `"react"` adds emoji reaction; type `"reply"` sends a reply message. Includes `[DEBUG]` console logs.
+- **Pattern matching** (`messageCreate.ts`) — Ignores bot authors, iterates patterns in order, first match wins. Type `"react"` adds emoji reaction; type `"reply"` sends a reply message. Includes `[DEBUG]` console logs.
 - **`patternToRegex()`** — Converts pattern strings to RegExp: escapes special chars, replaces `*` with `.*`, case-insensitive.
-- **Slash command registration** (`ready.js`) — On `ClientReady`, registers commands globally via Discord REST API PUT to `/applications/{APP_ID}/commands`.
+- **Slash command registration** (`ready.ts`) — On `ClientReady`, registers commands globally via Discord REST API PUT to `/applications/{APP_ID}/commands`.
+- **Word tracking** (`wordcounter.ts`) — Counts tracked word occurrences per user, persists to `data/wordcounts-data.json`, announces milestones.
 
 **Pattern Config Format (`patterns.json`):**
 ```json

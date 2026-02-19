@@ -1,4 +1,4 @@
-import { Events } from 'discord.js';
+import { Events, Message } from 'discord.js';
 import { patternToRegex, loadPatterns } from '../utils/patterns.js';
 import {
   loadWordCountConfig,
@@ -14,12 +14,13 @@ const wordCountConfig = loadWordCountConfig();
 export const name = Events.MessageCreate;
 export const once = false;
 
-export async function execute(message) {
+export async function execute(message: Message): Promise<void> {
   // Ignore bot messages to prevent loops
   if (message.author.bot) return;
 
   const content = message.content;
-  console.log(`[DEBUG] Message from ${message.author.tag} in #${message.channel.name}: "${content}"`);
+  const channelName = 'name' in message.channel ? message.channel.name : 'DM';
+  console.log(`[DEBUG] Message from ${message.author.tag} in #${channelName}: "${content}"`);
 
   for (const patternConfig of patternsConfig.patterns) {
     const regex = patternToRegex(patternConfig.pattern);
@@ -50,7 +51,7 @@ export async function execute(message) {
     const results = updateWordCounts(message.author.id, message.author.username, wordOccurrences);
 
     // Check for milestones — only announce the highest one
-    let highestMilestoneResult = null;
+    let highestMilestoneResult: { word: string; count: number } | null = null;
     let highestMilestoneValue = 0;
 
     for (const { word, previousCount, newCount } of results) {
@@ -72,7 +73,9 @@ export async function execute(message) {
       );
       console.log(`[DEBUG] Milestone reached! Sending callout: ${callout}`);
       try {
-        await message.channel.send(callout);
+        if ('send' in message.channel) {
+          await message.channel.send(callout);
+        }
       } catch (error) {
         console.error('Error sending milestone callout:', error);
       }
