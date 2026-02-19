@@ -1,8 +1,9 @@
 import 'dotenv/config';
 import { Client, GatewayIntentBits } from 'discord.js';
-import * as ready from './src/events/ready.js';
-import * as messageCreate from './src/events/messageCreate.js';
-import * as interactionCreate from './src/events/interactionCreate.js';
+import * as ready from './events/ready.js';
+import * as messageCreate from './events/messageCreate.js';
+import * as interactionCreate from './events/interactionCreate.js';
+import type { BotEvent } from './types/index.js';
 
 // Create Discord client with required intents
 const client = new Client({
@@ -14,12 +15,12 @@ const client = new Client({
 });
 
 // Register event handlers
-const events = [ready, messageCreate, interactionCreate];
+const events: BotEvent[] = [ready, messageCreate, interactionCreate];
 for (const event of events) {
   if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args));
+    client.once(event.name, (...args: unknown[]) => event.execute(...args));
   } else {
-    client.on(event.name, (...args) => event.execute(...args));
+    client.on(event.name, (...args: unknown[]) => event.execute(...args));
   }
 }
 

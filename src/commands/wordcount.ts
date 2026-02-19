@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { loadWordCountConfig, getUserStats } from '../utils/wordcounter.js';
 
 export const data = new SlashCommandBuilder()
@@ -11,7 +11,7 @@ export const data = new SlashCommandBuilder()
       .setRequired(false)
   );
 
-export async function execute(interaction) {
+export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const targetUser = interaction.options.getUser('user') || interaction.user;
   const stats = getUserStats(targetUser.id);
   const config = loadWordCountConfig();
@@ -28,7 +28,7 @@ export async function execute(interaction) {
     return;
   }
 
-  const lines = [];
+  const lines: string[] = [];
   const sortedWords = Object.entries(stats.words).sort((a, b) => b[1] - a[1]);
 
   for (const [word, count] of sortedWords) {

@@ -18,4 +18,7 @@ jobs:
             cd ~/revenge-of-krampus-discord-bot
             git pull
             npm install
-            pm2 restart krampus-bot
+            npm run build
+            pm2 delete krampus-bot || true
+            pm2 start npm --name krampus-bot -- start
+            pm2 save
