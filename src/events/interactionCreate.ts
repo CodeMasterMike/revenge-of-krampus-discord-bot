@@ -2,12 +2,14 @@ import { Collection, Events, Interaction } from 'discord.js';
 import * as testCommand from '../commands/test.js';
 // import * as wordcountCommand from '../commands/wordcount.js';
 import * as krampusCommand from '../commands/krampus.js';
+import * as eightballCommand from '../commands/eightball.js';
 import type { BotCommand } from '../types/index.js';
 
 const commands = new Collection<string, BotCommand>();
 commands.set(testCommand.data.name, testCommand);
 // commands.set(wordcountCommand.data.name, wordcountCommand);
 commands.set(krampusCommand.data.name, krampusCommand);
+commands.set(eightballCommand.data.name, eightballCommand);
 
 export const name = Events.InteractionCreate;
 export const once = false;
